@@ -1,4 +1,13 @@
 
+"""
+Base classes / functions for calculating geodesic components and structures.
+
+The book *Geodesic Math and How To Use It* (Hugh Kenner) served as the main 
+if not sole reference for this module.  Consequently, references to it will 
+be of the form [Kenner p# f#], where p# is the page number, and f# is the
+formula number (if provided).
+"""
+
 from math import pi, sin, cos, atan, sqrt
 
 tau = (1 + sqrt(5.0)) / 2.0  # a.k.a. phi
@@ -18,6 +27,7 @@ class Apex(object):
           the triangle.
 
     There is a simple mapping from x, y, z to l, r, but no inverse map.
+    
     """
     def __init__(self, x: int, y: int, z: int):
         self._x = x
@@ -35,7 +45,8 @@ class Apex(object):
         if self._z == 0:
             return pi / 2
         return atan(sqrt(self._x**2 + self._y**2) / self._z)
-        
+
+
     @property
     def x(self):
         return self._x
@@ -121,16 +132,17 @@ class Geodesic(object):
         1v tetrahedron apices lie on the axes, but the two "lower" icosahedron
         apices do not and thus their coordinates need to be adjusted before
         passing them to the Apex constructor.
-        
+
         The default conversion is simply an identity.
         """
         return x, y, z
-        
+
     def apices(self, v: int=1):
         if v < 1:
             raise ValueError('v must be a positive integer')
         rho_set = self.rho(v)
-        result = [Apex(*(self._cvt(rho_set[0][i], rho_set[1][i], rho_set[2][i], v)))
+        result = [Apex(*(self._cvt(rho_set[0][i], rho_set[1][i],
+                                   rho_set[2][i], v)))
                   for i in range(len(rho_set[0]))]
         return result
 
@@ -143,8 +155,8 @@ class Geodesic(object):
         Eq. 9.2 - p 60 (sphere w/ r=1)
         """
         return sqrt(2 - (2 * cos(a1.theta()) * cos(a2.theta()) +
-                    cos(a1.phi() - a2.phi()) * sin(a1.theta()) * sin(a2.theta())))
-
+                    cos(a1.phi() - a2.phi()) *
+                    sin(a1.theta()) * sin(a2.theta())))
 
 
 class TetraGeodesic(Geodesic):
